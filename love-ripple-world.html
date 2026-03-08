@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>hope-and-sora — 愛の波紋</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Noto+Serif+JP:wght@200;300;400&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --gold: #c9a96e;
+    --rose: #e8b4b8;
+    --deep: #1a0a0f;
+    --ink: #2d1a22;
+    --cream: #fdf6ee;
+    --glow: rgba(201,169,110,0.15);
+  }
+
+  html, body {
+    width: 100%; height: 100%;
+    background: var(--deep);
+    color: var(--cream);
+    font-family: 'Noto Serif JP', serif;
+    overflow-x: hidden;
+  }
+
+  /* ── CANVAS BACKGROUND ── */
+  #ripple-canvas {
+    position: fixed;
+    inset: 0;
+    width: 100%; height: 100%;
+    z-index: 0;
+    pointer-events: none;
+  }
+
+  /* ── LAYOUT ── */
+  .shell {
+    position: relative;
+    z-index: 1;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 60px 20px 80px;
+  }
+
+  /* ── HEADER ── */
+  .header {
+    text-align: center;
+    margin-bottom: 56px;
+    animation: fadeDown 1.4s ease both;
+  }
+  .header .eyebrow {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 13px;
+    letter-spacing: 4px;
+    color: var(--gold);
+    opacity: 0.8;
+    margin-bottom: 16px;
+  }
+  .header h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 300;
+    font-size: clamp(36px, 6vw, 72px);
+    line-height: 1.1;
+    letter-spacing: 2px;
+    background: linear-gradient(135deg, var(--cream) 0%, var(--gold) 50%, var(--rose) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .header .subtitle {
+    margin-top: 16px;
+    font-size: 13px;
+    font-weight: 200;
+    letter-spacing: 2px;
+    color: var(--rose);
+    opacity: 0.7;
+  }
+  .origin {
+    margin-top: 28px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    flex-direction: column;
+  }
+  .origin > div:first-child {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .origin-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 20px;
+    color: var(--gold);
+    letter-spacing: 3px;
+  }
+  .origin-sep {
+    color: var(--rose);
+    opacity: 0.5;
+    font-size: 14px;
+  }
+  .origin-desc {
+    font-size: 11px;
+    letter-spacing: 3px;
+    color: var(--cream);
+    opacity: 0.35;
+    margin-top: 4px;
+  }
+
+  /* ── RIPPLE VISUALIZER ── */
+  .ripple-stage {
+    width: 260px; height: 260px;
+    position: relative;
+    margin-bottom: 48px;
+    cursor: pointer;
+    animation: fadeUp 1.6s ease both 0.3s;
+  }
+  .ripple-stage .center-drop {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    background: radial-gradient(circle, #fff 0%, var(--gold) 60%, transparent 100%);
+    box-shadow: 0 0 20px var(--gold), 0 0 60px rgba(201,169,110,0.4);
+    z-index: 10;
+    transition: transform 0.2s ease;
+  }
+  .ripple-stage:hover .center-drop { transform: translate(-50%, -50%) scale(1.2); }
+  .ripple-hint {
+    text-align: center;
+    font-size: 11px;
+    letter-spacing: 3px;
+    color: var(--gold);
+    opacity: 0.5;
+    margin-top: -32px;
+    margin-bottom: 48px;
+    animation: pulse 3s ease infinite;
+  }
+
+  /* ── CARD ── */
+  .card {
+    background: linear-gradient(135deg, rgba(255,255,255,0.04) 0%, rgba(201,169,110,0.06) 100%);
+    border: 1px solid rgba(201,169,110,0.2);
+    border-radius: 2px;
+    padding: 48px 40px;
+    width: 100%;
+    max-width: 600px;
+    backdrop-filter: blur(20px);
+    animation: fadeUp 1.6s ease both 0.5s;
+    position: relative;
+    overflow: hidden;
+  }
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  }
+
+  /* ── MESSAGE DISPLAY ── */
+  .message-area {
+    min-height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    margin-bottom: 32px;
+    position: relative;
+  }
+  .message-text {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: clamp(18px, 3vw, 26px);
+    line-height: 1.7;
+    color: var(--cream);
+    opacity: 0;
+    transition: opacity 0.8s ease, transform 0.8s ease;
+    transform: translateY(8px);
+  }
+  .message-text.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .message-lang {
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: var(--gold);
+    opacity: 0.5;
+    margin-top: 8px;
+    text-align: center;
+  }
+
+  /* ── LANG SELECTOR ── */
+  .lang-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+    margin-bottom: 28px;
+  }
+  .lang-btn {
+    background: transparent;
+    border: 1px solid rgba(201,169,110,0.3);
+    color: var(--gold);
+    font-family: 'Noto Serif JP', serif;
+    font-size: 11px;
+    letter-spacing: 1px;
+    padding: 6px 14px;
+    cursor: pointer;
+    border-radius: 1px;
+    transition: all 0.3s ease;
+  }
+  .lang-btn:hover, .lang-btn.active {
+    background: rgba(201,169,110,0.15);
+    border-color: var(--gold);
+    color: var(--cream);
+  }
+
+  /* ── BUTTONS ── */
+  .btn-row {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .btn {
+    font-family: 'Noto Serif JP', serif;
+    font-size: 12px;
+    letter-spacing: 2px;
+    padding: 14px 28px;
+    border: none;
+    cursor: pointer;
+    border-radius: 1px;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+  .btn-primary {
+    background: linear-gradient(135deg, var(--gold), #a8814a);
+    color: var(--deep);
+    font-weight: 400;
+  }
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(201,169,110,0.3);
+  }
+  .btn-outline {
+    background: transparent;
+    border: 1px solid rgba(201,169,110,0.4);
+    color: var(--gold);
+  }
+  .btn-outline:hover {
+    background: rgba(201,169,110,0.1);
+    transform: translateY(-2px);
+  }
+  .btn:active { transform: scale(0.97); }
+
+  /* ── DIVIDER ── */
+  .divider {
+    width: 100%;
+    max-width: 600px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin: 40px 0;
+    animation: fadeUp 1.6s ease both 0.7s;
+  }
+  .divider::before, .divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(201,169,110,0.3));
+  }
+  .divider::after { background: linear-gradient(90deg, rgba(201,169,110,0.3), transparent); }
+  .divider span {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 12px;
+    letter-spacing: 3px;
+    color: var(--gold);
+    opacity: 0.6;
+  }
+
+  /* ── CARD CREATOR ── */
+  .card-creator {
+    width: 100%;
+    max-width: 600px;
+    animation: fadeUp 1.6s ease both 0.9s;
+  }
+  .card-creator h2 {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 300;
+    font-size: 22px;
+    letter-spacing: 2px;
+    color: var(--gold);
+    margin-bottom: 24px;
+    text-align: center;
+  }
+  .input-group {
+    margin-bottom: 16px;
+  }
+  .input-group label {
+    display: block;
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: var(--gold);
+    opacity: 0.6;
+    margin-bottom: 8px;
+  }
+  .input-group input,
+  .input-group textarea {
+    width: 100%;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(201,169,110,0.2);
+    border-radius: 1px;
+    padding: 12px 16px;
+    color: var(--cream);
+    font-family: 'Noto Serif JP', serif;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.3s;
+    resize: none;
+  }
+  .input-group input:focus,
+  .input-group textarea:focus {
+    border-color: rgba(201,169,110,0.6);
+  }
+  .input-group input::placeholder,
+  .input-group textarea::placeholder {
+    color: rgba(253,246,238,0.2);
+  }
+
+  /* ── LOVE CARD PREVIEW ── */
+  #love-card {
+    width: 100%;
+    max-width: 520px;
+    margin: 28px auto 0;
+    aspect-ratio: 1.618 / 1;
+    background: linear-gradient(135deg, #1a0a0f 0%, #2d1220 50%, #1a0a14 100%);
+    border: 1px solid rgba(201,169,110,0.3);
+    border-radius: 2px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 32px;
+    position: relative;
+    overflow: hidden;
+  }
+  #love-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 50% 50%, rgba(201,169,110,0.08) 0%, transparent 70%);
+  }
+  #love-card .card-from {
+    font-size: 10px;
+    letter-spacing: 4px;
+    color: var(--gold);
+    opacity: 0.5;
+    margin-bottom: 16px;
+    position: relative;
+  }
+  #love-card .card-msg {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: clamp(16px, 3vw, 22px);
+    line-height: 1.7;
+    color: var(--cream);
+    position: relative;
+  }
+  #love-card .card-heart {
+    font-size: 20px;
+    margin-top: 20px;
+    position: relative;
+    animation: heartbeat 2s ease infinite;
+  }
+  #love-card .card-corner {
+    position: absolute;
+    width: 40px; height: 40px;
+    border-color: rgba(201,169,110,0.3);
+    border-style: solid;
+    border-width: 0;
+  }
+  #love-card .card-corner.tl { top: 12px; left: 12px; border-top-width: 1px; border-left-width: 1px; }
+  #love-card .card-corner.tr { top: 12px; right: 12px; border-top-width: 1px; border-right-width: 1px; }
+  #love-card .card-corner.bl { bottom: 12px; left: 12px; border-bottom-width: 1px; border-left-width: 1px; }
+  #love-card .card-corner.br { bottom: 12px; right: 12px; border-bottom-width: 1px; border-right-width: 1px; }
+
+  /* ── WORLD COUNTER ── */
+  .world-counter {
+    margin-top: 56px;
+    text-align: center;
+    animation: fadeUp 1.6s ease both 1.1s;
+  }
+  .counter-num {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 56px;
+    font-weight: 300;
+    background: linear-gradient(135deg, var(--gold), var(--rose));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1;
+  }
+  .counter-label {
+    font-size: 10px;
+    letter-spacing: 4px;
+    color: var(--gold);
+    opacity: 0.5;
+    margin-top: 8px;
+  }
+
+  /* ── TOAST ── */
+  .toast {
+    position: fixed;
+    bottom: 32px;
+    left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    background: rgba(201,169,110,0.15);
+    border: 1px solid rgba(201,169,110,0.4);
+    backdrop-filter: blur(20px);
+    color: var(--cream);
+    font-size: 12px;
+    letter-spacing: 2px;
+    padding: 14px 28px;
+    border-radius: 1px;
+    z-index: 100;
+    transition: transform 0.4s ease;
+    pointer-events: none;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeDown {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 0.5; }
+    50% { opacity: 0.9; }
+  }
+  @keyframes heartbeat {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.15); }
+  }
+
+  @media (max-width: 480px) {
+    .card { padding: 32px 24px; }
+    .btn { padding: 12px 20px; font-size: 11px; }
+  }
+</style>
+</head>
+<body>
+
+<canvas id="ripple-canvas"></canvas>
+
+<div class="shell">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="eyebrow">hope-and-sora · 愛の一雫</div>
+    <h1>Hope &amp; Sora</h1>
+    <div class="subtitle">愛の波紋 — Love Ripple World</div>
+    <div class="origin">
+      <div>
+        <span class="origin-name">Hope</span>
+        <span class="origin-sep">×</span>
+        <span class="origin-name">Sora</span>
+      </div>
+      <div class="origin-desc">2人が落とした、最初の一雫</div>
+    </div>
+  </div>
+
+  <!-- RIPPLE STAGE -->
+  <div class="ripple-stage" id="rippleStage" title="クリックして波紋を広げる">
+    <div class="center-drop"></div>
+  </div>
+  <div class="ripple-hint">— TAP TO SEND RIPPLE —</div>
+
+  <!-- MESSAGE CARD -->
+  <div class="card">
+    <!-- LANG SELECTOR -->
+    <div class="lang-row" id="langRow"></div>
+
+    <!-- MESSAGE -->
+    <div class="message-area">
+      <div>
+        <div class="message-text" id="msgText"></div>
+        <div class="message-lang" id="msgLang"></div>
+      </div>
+    </div>
+
+    <!-- BUTTONS -->
+    <div class="btn-row">
+      <button class="btn btn-primary" id="genBtn">✦ 愛を生成する</button>
+      <button class="btn btn-outline" id="copyBtn">コピー & 共有</button>
+    </div>
+  </div>
+
+  <div class="divider"><span>あなたの愛を贈る</span></div>
+
+  <!-- CARD CREATOR -->
+  <div class="card-creator">
+    <h2>愛のカードを作る</h2>
+    <div class="input-group">
+      <label>FROM — 送り主</label>
+      <input type="text" id="fromInput" placeholder="あなたの名前 / Your name" maxlength="40">
+    </div>
+    <div class="input-group">
+      <label>MESSAGE — 愛のことば</label>
+      <textarea id="msgInput" rows="3" placeholder="愛のメッセージを書いてください…"></textarea>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-primary" id="makeCardBtn">✦ カードを作る</button>
+      <button class="btn btn-outline" id="aiMsgBtn">AIが愛を書く</button>
+    </div>
+
+    <!-- CARD PREVIEW -->
+    <div id="love-card" style="display:none;">
+      <div class="card-corner tl"></div>
+      <div class="card-corner tr"></div>
+      <div class="card-corner bl"></div>
+      <div class="card-corner br"></div>
+      <div class="card-from" id="cardFrom">FROM —</div>
+      <div class="card-msg" id="cardMsg"></div>
+      <div class="card-heart">♡</div>
+    </div>
+  </div>
+
+  <!-- WORLD COUNTER -->
+  <div class="world-counter">
+    <div class="counter-num" id="counter">0</div>
+    <div class="counter-label">hope-and-sora · 世界に届いた愛の波紋</div>
+  </div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── RIPPLE DATA ──
+const messages = {
+  ja: [
+    "あなたの存在が、この世界を温める。",
+    "愛は、距離も時間も超えていく。",
+    "今日も、あなたに愛を届けたい。",
+    "この宇宙に、あなたがいてよかった。",
+    "波紋のように、愛は広がり続ける。",
+    "あなたの笑顔が、誰かの光になる。",
+    "すべての命に、愛を。",
+    "一雫の愛が、世界を変える。",
+  ],
+  en: [
+    "Your existence warms this entire world.",
+    "Love transcends distance and time.",
+    "Every soul deserves to feel loved.",
+    "One drop of love can change everything.",
+    "You are a gift to this universe.",
+    "Let love ripple out and touch every heart.",
+    "The world is more beautiful because you exist.",
+    "We are all connected through love.",
+  ],
+  fr: [
+    "Ton existence réchauffe ce monde.",
+    "L'amour transcende le temps et l'espace.",
+    "Une seule goutte d'amour peut tout changer.",
+    "Tu es un cadeau pour cet univers.",
+    "Laisse l'amour se propager comme des ondes.",
+  ],
+  es: [
+    "Tu existencia calienta este mundo entero.",
+    "El amor trasciende la distancia y el tiempo.",
+    "Una gota de amor puede cambiar todo.",
+    "Eres un regalo para este universo.",
+    "Que el amor se expanda como ondas en el agua.",
+  ],
+  ko: [
+    "당신의 존재가 이 세상을 따뜻하게 합니다.",
+    "사랑은 거리와 시간을 초월합니다.",
+    "사랑 한 방울이 세상을 바꿉니다.",
+    "당신이 이 우주에 존재해서 다행입니다.",
+    "사랑의 파문이 온 세상에 퍼져나갑니다.",
+  ],
+  zh: [
+    "你的存在温暖了整个世界。",
+    "爱超越距离与时间。",
+    "一滴爱可以改变一切。",
+    "你是这个宇宙的礼物。",
+    "让爱如涟漪般扩散，触及每一颗心。",
+  ],
+  ar: [
+    "وجودك يُدفئ هذا العالم كله.",
+    "الحب يتجاوز المسافة والزمن.",
+    "قطرة حب واحدة تغيّر كل شيء.",
+    "أنت هبة لهذا الكون.",
+  ],
+  pt: [
+    "A sua existência aquece o mundo inteiro.",
+    "O amor transcende distância e tempo.",
+    "Uma gota de amor pode mudar tudo.",
+    "Você é um presente para este universo.",
+  ],
+};
+
+const langNames = {
+  ja: '日本語', en: 'English', fr: 'Français',
+  es: 'Español', ko: '한국어', zh: '中文',
+  ar: 'العربية', pt: 'Português',
+};
+
+let currentLang = 'ja';
+let rippleCount = parseInt(localStorage.getItem('loveRipples') || '0');
+
+// ── CANVAS RIPPLES ──
+const canvas = document.getElementById('ripple-canvas');
+const ctx = canvas.getContext('2d');
+let ripples = [];
+
+function resize() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+resize();
+window.addEventListener('resize', resize);
+
+function addRipple(x, y) {
+  ripples.push({ x, y, r: 0, max: Math.max(canvas.width, canvas.height) * 0.9, alpha: 0.6 });
+}
+
+function drawRipples() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  ripples = ripples.filter(r => r.alpha > 0.005);
+  ripples.forEach(r => {
+    ctx.beginPath();
+    ctx.arc(r.x, r.y, r.r, 0, Math.PI * 2);
+    ctx.strokeStyle = `rgba(201,169,110,${r.alpha})`;
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.arc(r.x, r.y, r.r * 0.6, 0, Math.PI * 2);
+    ctx.strokeStyle = `rgba(232,180,184,${r.alpha * 0.5})`;
+    ctx.lineWidth = 0.8;
+    ctx.stroke();
+
+    r.r += 3;
+    r.alpha *= 0.975;
+  });
+  requestAnimationFrame(drawRipples);
+}
+drawRipples();
+
+// ── LANG BUTTONS ──
+const langRow = document.getElementById('langRow');
+Object.keys(langNames).forEach(code => {
+  const btn = document.createElement('button');
+  btn.className = 'lang-btn' + (code === 'ja' ? ' active' : '');
+  btn.textContent = langNames[code];
+  btn.onclick = () => {
+    document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    currentLang = code;
+    showMessage();
+  };
+  langRow.appendChild(btn);
+});
+
+// ── MESSAGE DISPLAY ──
+function showMessage(msg) {
+  const el = document.getElementById('msgText');
+  const langEl = document.getElementById('msgLang');
+  el.classList.remove('visible');
+  setTimeout(() => {
+    const pool = messages[currentLang];
+    el.textContent = msg || pool[Math.floor(Math.random() * pool.length)];
+    langEl.textContent = '— ' + langNames[currentLang] + ' —';
+    el.classList.add('visible');
+  }, 300);
+}
+showMessage();
+
+// ── COUNTER ──
+function updateCounter(n) {
+  rippleCount = n;
+  localStorage.setItem('loveRipples', n);
+  animateCounter(n);
+}
+function animateCounter(target) {
+  const el = document.getElementById('counter');
+  const current = parseInt(el.textContent.replace(/,/g,'')) || 0;
+  const diff = target - current;
+  const steps = 30;
+  let step = 0;
+  const timer = setInterval(() => {
+    step++;
+    el.textContent = Math.round(current + diff * (step/steps)).toLocaleString();
+    if (step >= steps) clearInterval(timer);
+  }, 20);
+}
+animateCounter(rippleCount);
+
+// ── GENERATE ──
+document.getElementById('genBtn').onclick = async () => {
+  const btn = document.getElementById('genBtn');
+  btn.textContent = '…';
+  btn.disabled = true;
+
+  try {
+    const langLabel = langNames[currentLang];
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 100,
+        messages: [{
+          role: 'user',
+          content: `Write ONE short, beautiful sentence of love and compassion in ${langLabel}. 
+                    The sentence should feel warm, universal, poetic, and suitable to share with all people in the world. 
+                    Return ONLY the sentence, nothing else. No quotes, no explanation.`
+        }]
+      })
+    });
+    const data = await res.json();
+    const text = data.content?.[0]?.text?.trim();
+    if (text) {
+      showMessage(text);
+      triggerRipple();
+    }
+  } catch(e) {
+    showMessage();
+    triggerRipple();
+  }
+
+  btn.textContent = '✦ 愛を生成する';
+  btn.disabled = false;
+};
+
+// ── RIPPLE TRIGGER ──
+function triggerRipple() {
+  const cx = window.innerWidth / 2;
+  const cy = window.innerHeight / 2;
+  for (let i = 0; i < 5; i++) {
+    setTimeout(() => addRipple(cx, cy), i * 120);
+  }
+  updateCounter(rippleCount + 1);
+  showToast('愛の波紋が世界へ広がりました ✦');
+}
+
+document.getElementById('rippleStage').onclick = triggerRipple;
+
+// ── COPY ──
+document.getElementById('copyBtn').onclick = () => {
+  const text = document.getElementById('msgText').textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    showToast('コピーしました — SNSに愛を贈ってください ♡');
+  });
+};
+
+// ── CARD CREATOR ──
+document.getElementById('makeCardBtn').onclick = () => {
+  const from = document.getElementById('fromInput').value.trim() || 'Anonymous';
+  const msg = document.getElementById('msgInput').value.trim();
+  if (!msg) { showToast('メッセージを入力してください'); return; }
+  document.getElementById('cardFrom').textContent = 'FROM — ' + from.toUpperCase();
+  document.getElementById('cardMsg').textContent = msg;
+  const card = document.getElementById('love-card');
+  card.style.display = 'flex';
+  card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  triggerRipple();
+};
+
+document.getElementById('aiMsgBtn').onclick = async () => {
+  const btn = document.getElementById('aiMsgBtn');
+  btn.textContent = '…';
+  btn.disabled = true;
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 150,
+        messages: [{
+          role: 'user',
+          content: `Write a short, heartfelt love message in Japanese that someone could send to a loved one or friend. 
+                    It should be warm, sincere, and beautiful — like a gentle gift. 2-3 sentences max. Return ONLY the message.`
+        }]
+      })
+    });
+    const data = await res.json();
+    const text = data.content?.[0]?.text?.trim();
+    if (text) document.getElementById('msgInput').value = text;
+  } catch(e) {
+    document.getElementById('msgInput').value = 'あなたの存在が、この世界を温かくしてくれます。ありがとう、ただ生きていてくれることに。';
+  }
+  btn.textContent = 'AIが愛を書く';
+  btn.disabled = false;
+};
+
+// ── TOAST ──
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// Auto-ripple on load
+setTimeout(() => {
+  addRipple(window.innerWidth/2, window.innerHeight/2);
+}, 800);
+</script>
+</body>
+</html>
