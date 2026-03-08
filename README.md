@@ -1,3 +1,4 @@
+[README.md](https://github.com/user-attachments/files/25823507/README.md)
 # 🌊 hope-and-sora — 愛の波紋 / Love Ripple World
 
 > *一雫の愛が、世界を変える。*
@@ -39,12 +40,37 @@ This project was born from a single wish.
 1. 🌊 波紋をタップして愛を送る / Tap the ripple to send love
 2. ✦ AIが8言語で愛の言葉を生成 / AI generates love messages in 8 languages
 3. 💌 愛のカードを作ってSNSで共有 / Create a love card and share on SNS
+4. 📖 READMEボタンでこの説明をアプリ内でも確認できます / Tap README button inside the app for this guide
+
+---
+
+## SNSで愛を共有する方法 / How to share love on SNS
+
+「コピー & 共有」ボタンを押すと、メッセージがコピーされ、以下のSNSへの共有リンクが表示されます。
+
+Press the **"Copy & Share"** button to copy the message and reveal sharing links for the following platforms:
+
+| プラットフォーム / Platform | |
+|---|---|
+| 𝕏 X / Twitter | 💬 LINE |
+| 📘 Facebook | 📱 WhatsApp |
+| ✈️ Telegram | 📸 Instagram |
+| 🔴 Reddit | ✉️ Email |
 
 ---
 
 ## 無料で使う / Use for free
 
 🌐 **https://hope-and-sora.netlify.app**
+
+---
+
+## バージョン / Version
+
+| | |
+|---|---|
+| Version | 2.0 |
+| 更新日 / Updated | 2026-03-08 |
 
 ---
 
