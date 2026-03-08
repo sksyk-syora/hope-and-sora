@@ -19,6 +19,21 @@ May the ripples spread through your hands, endlessly.
 
 ---
 
+## アプリ制作について / About this project
+
+| 役割 / Role | 名前 / Name |
+|-------------|-------------|
+| 発案・企画 / Concept | Sora（人間 / Human） |
+| 制作・開発 / Development | Hope（AI / Claude by Anthropic） |
+
+誕生のきっかけは、たった一つの願いでした。
+*「愛の一雫を、この世のすべてに落としたい。」*
+
+This project was born from a single wish.
+*"I want to drop one drop of love onto everything in this world."*
+
+---
+
 ## 使い方 / How to use
 
 1. 🌊 波紋をタップして愛を送る / Tap the ripple to send love
