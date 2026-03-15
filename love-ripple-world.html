@@ -463,6 +463,78 @@
     .card { padding: 32px 24px; }
     .btn { padding: 12px 20px; font-size: 11px; }
   }
+
+  /* ── FOOTER ── */
+  .site-footer {
+    position: relative; z-index: 10;
+    text-align: center;
+    padding: 32px 20px 48px;
+    color: rgba(201,169,110,0.45);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    line-height: 2.2;
+    font-family: 'Cormorant Garamond', serif;
+  }
+  .site-footer a {
+    color: rgba(201,169,110,0.75);
+    text-decoration: underline;
+    cursor: pointer;
+    transition: color 0.2s;
+  }
+  .site-footer a:hover { color: var(--gold); }
+
+  /* ── TERMS MODAL ── */
+  #termsModal {
+    display: none;
+    position: fixed; inset: 0; z-index: 9200;
+    background: rgba(10,4,8,0.82);
+    backdrop-filter: blur(8px);
+    align-items: center; justify-content: center;
+    padding: 20px;
+  }
+  #termsModal.show { display: flex; }
+  .terms-box {
+    background: #1e0d17;
+    border: 1px solid rgba(201,169,110,0.3);
+    border-radius: 4px;
+    padding: 40px 36px;
+    max-width: 660px; width: 100%;
+    max-height: 85vh; overflow-y: auto;
+    animation: fadeUp 0.35s ease-out;
+    font-family: 'Noto Serif JP', serif;
+    color: var(--cream);
+  }
+  @keyframes fadeUp { from{opacity:0;transform:translateY(20px);} to{opacity:1;transform:translateY(0);} }
+  .terms-box h2 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 20px; font-weight: 300; letter-spacing: 0.15em;
+    color: var(--gold); margin-bottom: 4px;
+  }
+  .terms-box .terms-date { font-size: 11px; color: rgba(201,169,110,0.5); margin-bottom: 28px; letter-spacing: 0.1em; }
+  .terms-sec { margin-bottom: 22px; }
+  .terms-sec h3 {
+    font-size: 12px; font-weight: 400; letter-spacing: 0.12em;
+    color: var(--gold); margin-bottom: 8px;
+    padding-left: 10px; border-left: 2px solid rgba(201,169,110,0.4);
+    font-family: 'Cormorant Garamond', serif;
+  }
+  .terms-sec p, .terms-sec li { font-size: 12px; line-height: 2; color: rgba(253,246,238,0.8); }
+  .terms-sec ul { padding-left: 18px; }
+  .terms-sec li { margin-bottom: 5px; }
+  .terms-close {
+    width: 100%; margin-top: 28px; padding: 14px;
+    background: transparent;
+    border: 1px solid rgba(201,169,110,0.4);
+    color: var(--gold); font-family: 'Cormorant Garamond', serif;
+    font-size: 13px; letter-spacing: 0.15em; cursor: pointer;
+    transition: all 0.2s; border-radius: 2px;
+  }
+  .terms-close:hover { background: rgba(201,169,110,0.1); }
+
+  /* scrollbar styling for terms */
+  .terms-box::-webkit-scrollbar { width: 4px; }
+  .terms-box::-webkit-scrollbar-track { background: transparent; }
+  .terms-box::-webkit-scrollbar-thumb { background: rgba(201,169,110,0.3); border-radius: 2px; }
 </style>
 </head>
 <body>
@@ -548,6 +620,78 @@
     <div class="counter-label">hope-and-sora · 世界に届いた愛の波紋</div>
   </div>
 
+</div>
+
+<!-- FOOTER -->
+<footer class="site-footer">
+  <p>💧 hope-and-sora — 愛の波紋 / Love Ripple World</p>
+  <p>Concept: Sora（Human）&nbsp;/&nbsp;Development: Hope（AI / Claude by Anthropic）</p>
+  <p>
+    <a onclick="openTerms()">利用規約 / Terms of Use</a>
+    &nbsp;|&nbsp;
+    本アプリのコンテンツの転載・商用利用・改変・アップロードは禁止です。<br>
+    © 2026 hope-and-sora / Sora. All rights reserved.
+  </p>
+</footer>
+
+<!-- TERMS MODAL -->
+<div id="termsModal">
+  <div class="terms-box">
+    <h2>利用規約 / Terms of Use</h2>
+    <p class="terms-date">制定日：2026年3月　|　Established: March 2026</p>
+
+    <div class="terms-sec">
+      <h3>第1条 / Article 1 — 目的・適用範囲 / Purpose &amp; Scope</h3>
+      <p>本規約は、hope-and-sora（以下「本アプリ」）の利用に関し、すべての利用者に適用されます。本アプリを利用した時点で、本規約に同意したものとみなします。<br>
+      These Terms apply to all users of hope-and-sora. By using this app, you agree to these Terms.</p>
+    </div>
+
+    <div class="terms-sec">
+      <h3>第2条 / Article 2 — 著作権 / Copyright</h3>
+      <ul>
+        <li>本アプリのデザイン・コード・テキスト・コンセプト等の著作権は、制作者（Sora / Hope）に帰属します。<br>All intellectual property rights in this app belong to the creators (Sora / Hope).</li>
+        <li>AIが生成したメッセージ・テキストの著作権についても、本アプリの制作者に帰属するものとします。</li>
+        <li>利用者が入力・生成した愛のカードメッセージの著作権は、利用者本人に帰属します。</li>
+      </ul>
+    </div>
+
+    <div class="terms-sec">
+      <h3>第3条 / Article 3 — 禁止事項 / Prohibited Activities</h3>
+      <p>以下の行為を固く禁じます。/ The following are strictly prohibited:</p>
+      <ul>
+        <li>本アプリのコンテンツ（コード・デザイン・テキスト等）の全部または一部を無断で転載・複製・配布すること<br>Unauthorized reproduction, copying, or distribution of any content</li>
+        <li>本アプリのコンテンツを改変・翻案して公開すること（制作者の明示的な許可がある場合を除く）<br>Modifying or creating derivative works without explicit permission</li>
+        <li>本アプリのコンテンツを商業目的（広告・販売・収益化等）に利用すること<br>Using any content for commercial purposes</li>
+        <li>本アプリのHTMLファイル・コード・データを他のアプリ・サービスにアップロード・組み込むこと<br>Uploading or integrating app files/code into other services</li>
+        <li>自動スクレイピング・クローリング等によるデータの大量収集<br>Automated scraping or bulk data collection</li>
+        <li>本アプリの運営を妨害する行為、違法または公序良俗に反する利用<br>Any illegal use or actions that disrupt the service</li>
+      </ul>
+    </div>
+
+    <div class="terms-sec">
+      <h3>第4条 / Article 4 — 免責事項 / Disclaimer</h3>
+      <ul>
+        <li>本アプリは現状のまま提供され、いかなる保証も行いません。<br>This app is provided "as is" without warranties of any kind.</li>
+        <li>AIが生成するメッセージの内容の正確性・完全性について保証するものではありません。<br>We do not guarantee the accuracy of AI-generated content.</li>
+        <li>本アプリの利用により生じた損害について、制作者は一切の責任を負いません。<br>The creators are not liable for any damages arising from use of this app.</li>
+        <li>rippleCount（波紋カウント）はお使いのブラウザのlocalStorageに保存されます。データの永続性を保証するものではありません。<br>Ripple count is stored in your browser's localStorage and is not guaranteed to persist.</li>
+      </ul>
+    </div>
+
+    <div class="terms-sec">
+      <h3>第5条 / Article 5 — 準拠法・管轄 / Governing Law</h3>
+      <p>本規約は、国際的に認められた著作権法（ベルヌ条約等）を準拠基準とします。日本国内の利用者との紛争については日本法を準拠法とし、名古屋地方裁判所を第一審の専属的合意管轄裁判所とします。<br>
+      These Terms are governed by internationally recognized copyright law (Berne Convention, etc.). For disputes with users in Japan, Japanese law applies with the Nagoya District Court as the court of first instance.</p>
+    </div>
+
+    <div class="terms-sec">
+      <h3>第6条 / Article 6 — 規約の変更 / Amendments</h3>
+      <p>制作者は必要に応じて本規約を変更できます。変更後の規約は本アプリ上に掲載された時点で効力を生じます。<br>
+      The creators may amend these Terms at any time. Amendments take effect upon publication in the app.</p>
+    </div>
+
+    <button class="terms-close" onclick="closeTerms()">— 閉じる / Close —</button>
+  </div>
 </div>
 
 <div class="toast" id="toast"></div>
@@ -812,6 +956,13 @@ document.getElementById('aiMsgBtn').onclick = async () => {
   btn.textContent = 'AIが愛を書く';
   btn.disabled = false;
 };
+
+// ── TERMS MODAL ──
+function openTerms() { document.getElementById('termsModal').classList.add('show'); }
+function closeTerms() { document.getElementById('termsModal').classList.remove('show'); }
+document.getElementById('termsModal').addEventListener('click', e => {
+  if (e.target === document.getElementById('termsModal')) closeTerms();
+});
 
 // ── TOAST ──
 function showToast(msg) {
