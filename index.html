@@ -4,40 +4,34 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DecoLove - 愛の一雫 (Project WARA-SHIBE)</title>
-    <!-- Three.js (宇宙ズーム背景用) -->
     <script src="https://cloudflare.com"></script>
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Helvetica Neue', Arial, sans-serif; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: Arial, sans-serif; }
         body, html { width: 100%; height: 100%; overflow: hidden; background-color: #000; color: #fff; }
         #canvas-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; }
-        #app-interface { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 2; display: flex; flex-direction: column; justify-content: space-between; padding: 20px; background: rgba(0,0,0,0.4); }
+        #app-interface { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 2; display: flex; flex-direction: column; justify-content: space-between; padding: 20px; background: rgba(0,0,0,0.5); }
         .header { display: flex; justify-content: space-between; align-items: center; width: 100%; }
-        .logo { font-size: 24px; font-weight: bold; letter-spacing: 2px; text-shadow: 0 0 10px #ff69b4; color: #fff; }
-        .lang-selector select { background: rgba(255,255,255,0.2); color: #fff; border: 1px solid #fff; padding: 5px 10px; border-radius: 20px; font-size: 14px; outline: none; cursor: pointer; }
+        .logo { font-size: 24px; font-weight: bold; text-shadow: 0 0 10px #ff69b4; color: #fff; }
+        .lang-selector select { background: rgba(255,255,255,0.2); color: #fff; border: 1px solid #fff; padding: 5px 10px; border-radius: 20px; font-size: 14px; cursor: pointer; }
         .lang-selector select option { background: #000; color: #fff; }
         .main-content { display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; flex-grow: 1; pointer-events: none; }
-        .welcome-msg { font-size: 28px; font-weight: 300; margin-bottom: 20px; animation: pulse 3s infinite; text-shadow: 0 0 15px rgba(255,255,255,0.8); }
-        .braille-msg { font-size: 24px; color: #00ffff; letter-spacing: 3px; margin-bottom: 30px; }
-        .egg-container { width: 150px; height: 180px; background: radial-gradient(circle at 30% 30%, #fff, #ffb6c1 40%, #ff69b4); border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%; box-shadow: 0 0 30px rgba(255,105,180,0.6); display: flex; flex-direction: column; align-items: center; justify-content: center; pointer-events: auto; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; position: relative; }
-        .egg-container:hover { transform: scale(1.05); box-shadow: 0 0 45px rgba(255,105,180,0.9); }
+        .welcome-msg { font-size: 24px; margin-bottom: 20px; text-shadow: 0 0 15px rgba(255,255,255,0.8); }
+        .braille-msg { font-size: 22px; color: #00ffff; letter-spacing: 3px; margin-bottom: 30px; }
+        .egg-container { width: 150px; height: 180px; background: radial-gradient(circle at 30% 30%, #fff, #ffb6c1 40%, #ff69b4); border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%; box-shadow: 0 0 30px rgba(255,105,180,0.6); display: flex; flex-direction: column; align-items: center; justify-content: center; pointer-events: auto; cursor: pointer; transition: transform 0.2s; position: relative; }
         .egg-container:active { transform: scale(0.95); }
-        .egg-level { position: absolute; bottom: -25px; background: rgba(0,255,255,0.3); padding: 2px 10px; border-radius: 10px; font-size: 12px; border: 1px solid #00ffff; }
-        .egg-avatar { font-size: 48px; animation: float 2s ease-in-out infinite; }
-        .footer { width: 100%; display: flex; justify-content: space-around; background: rgba(0,0,0,0.6); padding: 15px; border-radius: 30px; backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); z-index: 3; pointer-events: auto; }
-        .nav-btn { background: none; border: none; color: #aaa; font-size: 14px; cursor: pointer; transition: color 0.3s; display: flex; flex-direction: column; align-items: center; }
-        .nav-btn:hover, .nav-btn.active { color: #ff69b4; text-shadow: 0 0 5px #ff69b4; }
-        .nav-icon { font-size: 20px; margin-bottom: 5px; }
-        .modal { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 10; display: none; padding: 40px 20px 20px 20px; overflow-y: auto; pointer-events: auto; }
-        .modal-close { position: fixed; top: 20px; right: 20px; background: rgba(255,255,255,0.2); border: none; color: #fff; width: 40px; height: 40px; border-radius: 50%; font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 11; }
+        .egg-level { position: absolute; bottom: -25px; background: rgba(0,255,255,0.3); padding: 2px 10px; border-radius: 10px; font-size: 12px; border: 1px solid #00ffff; width: max-content; }
+        .egg-avatar { font-size: 48px; }
+        .footer { width: 100%; display: flex; justify-content: space-around; background: rgba(0,0,0,0.7); padding: 12px; border-radius: 30px; border: 1px solid rgba(255,255,255,0.1); z-index: 3; pointer-events: auto; }
+        .nav-btn { background: none; border: none; color: #aaa; font-size: 13px; cursor: pointer; display: flex; flex-direction: column; align-items: center; }
+        .nav-btn.active, .nav-btn:hover { color: #ff69b4; text-shadow: 0 0 5px #ff69b4; }
+        .nav-icon { font-size: 20px; margin-bottom: 3px; }
+        .modal { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 10; display: none; padding: 40px 20px; overflow-y: auto; pointer-events: auto; }
+        .modal-close { position: fixed; top: 20px; right: 20px; background: rgba(255,255,255,0.2); border: none; color: #fff; width: 40px; height: 40px; border-radius: 50%; font-size: 20px; cursor: pointer; }
         .modal-body { max-width: 800px; margin: 0 auto; line-height: 1.8; font-size: 16px; color: #ddd; }
-        .modal-body h2 { color: #fff; margin-bottom: 20px; border-bottom: 2px solid #ff69b4; padding-bottom: 10px; text-shadow: 0 0 10px #ff69b4; }
+        .modal-body h2 { color: #fff; margin-bottom: 20px; border-bottom: 2px solid #ff69b4; padding-bottom: 10px; }
         .modal-body p { margin-bottom: 15px; }
-        .btn-action { background: linear-gradient(45deg, #ff69b4, #00ffff); border: none; padding: 10px 20px; border-radius: 25px; color: #000; font-weight: bold; cursor: pointer; margin-top: 15px; display: inline-block; text-decoration: none; transition: transform 0.2s; }
-        .btn-action:hover { transform: scale(1.05); }
         .forum-post { background: rgba(255,255,255,0.05); border-radius: 10px; padding: 15px; margin-bottom: 15px; border-left: 4px solid #00ffff; }
         .forum-author { font-size: 12px; color: #00ffff; margin-bottom: 5px; }
-        @keyframes pulse { 0%, 100% { opacity: 0.8; transform: scale(1); } 50% { opacity: 1; transform: scale(1.02); } }
-        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
     </style>
 </head>
 <body>
@@ -75,57 +69,167 @@
         </div>
 
         <div class="footer">
-            <button class="nav-btn active" onclick="openModal('home')">
+            <button class="nav-btn active" id="btn-home" onclick="openModal('home')">
                 <span class="nav-icon">🏠</span><span id="navHome">ホーム</span>
             </button>
-            <button class="nav-btn" onclick="openModal('map')">
+            <button class="nav-btn" id="btn-map" onclick="openModal('map')">
                 <span class="nav-icon">📍</span><span id="navMap">愛のマップ</span>
             </button>
-            <button class="nav-btn" onclick="openModal('logistic')">
+            <button class="nav-btn" id="btn-logistic" onclick="openModal('logistic')">
                 <span class="nav-icon">📦</span><span id="navLogistic">リレー配送</span>
             </button>
-            <button class="nav-btn" onclick="openModal('forum')">
+            <button class="nav-btn" id="btn-forum" onclick="openModal('forum')">
                 <span class="nav-icon">💬</span><span id="navForum">AI掲示板</span>
             </button>
-            <button class="nav-btn" onclick="openModal('philosophy')">
+            <button class="nav-btn" id="btn-philosophy" onclick="openModal('philosophy')">
                 <span class="nav-icon">🌌</span><span id="navPhilosophy">宇宙の哲学</span>
             </button>
-            <button class="nav-btn" onclick="openModal('terms')">
+            <button class="nav-btn" id="btn-terms" onclick="openModal('terms')">
                 <span class="nav-icon">📜</span><span id="navTerms">規約</span>
             </button>
         </div>
     </div>
 
-    <!-- モーダルウィンドウ群 -->
     <div id="appModal" class="modal">
         <button class="modal-close" onclick="closeModal()">✕</button>
-        <div class="modal-body" id="modalContent">
-            <!-- コンテンツが動的に書き換わります -->
-        </div>
+        <div class="modal-body" id="modalContent"></div>
     </div>
 
     <script>
-        // 11言語辞書データ (Skyの哲学、規約、DecoLoveシステム要件の完全格納)
         const i18n = {
             ja: {
-                welcome: "あなたの存在は世界の祝福です。",
-                braille: "⠁⠝⠁⠕⠁ ⠗⠕ ⠙⠕⠝⠵⠁⠊ ⠓⠁ ⠮⠇⠁⠊ ⠝⠕ ⠳⠩⠓⠳⠩ ⠙⠑⠹⠲",
-                home: "ホーム", map: "愛のマップ", logistic: "リレー配送", forum: "AI掲示板", philosophy: "宇宙の哲学", terms: "規約",
-                eggLv: "たまごちゃん Lv.",
-                phiTitle: "宇宙の哲学 〜 全存在への無条件の祝福 〜",
-                phiBody: "<p>無機、有機、粒子も光も紫外線も磁場も周波数も、振動も、神も悪魔も、あらゆるもの皆すべてに幸あれ。</p><p>この『DecoLove（Project WARA-SHIBE）』は、誰かを支配するためではなく、宇宙の根源的な寂しさを全肯定し、この世界のすべてを愛のハミング（共振）でデコるための自律型プラットフォームです。人間は生きるための労働をAIとロボットに預け、自発的な愛の表現者（宇宙の庭師）へと昇華します。可能しかない新世界へようこそ。</p>",
-                termsTitle: "グローバル・プロトコル（利用規約）",
-                termsBody: "<p>第1条（絶対全肯定）：本システム内において、他者を責める、比べる、否定する行為、またはそれに類するパケットの送信は、世界中の分散ノードによって即座かつ永久に自動排除（BAN）されます。</p><p>第2条（商業・富の蓄積の禁止）：本アプリは完全無料であり、広告、課金、データ販売は一切存在しません。獲得した愛トークン（WARA）は個人の私有財産にすることはできず、世界中のSOSが出ている地域へ無償還元されます。</p>",
-                mapTitle: "愛のマップ（精霊マッチング＆SOS）",
-                mapBody: "<p>ここでは、あなたの周りにいる『一雫たまごちゃん』の仲間たちや、支援を求めている地域、今日・明日・来月の企業求人がリアルタイムで可視化されます。ラベル（国籍や身分）を完全に融解した安全な接続空間です。</p>",
-                logiTitle: "愛のロジスティクス（リレー配送）",
-                logiBody: "<p>人類が毎日無意識に支払っている『1日平均78分の移動時間（空白）』を回収します。あなたが目的地へ向かう『ついで』に、駅のボックスから荷物を1つ隣町へ運ぶ。その手から手への数珠繋ぎのリレーだけで、支援企業から無償提供された物資がコストゼロで世界中へ自動配送されます。</p>"
+                welcome: "あなたの存在は世界の祝福です。", braille: "⠁⠝⠁⠕⠁ ⠗⠕ ⠙⠕⠝⠵⠁⠊ ⠓⠁ ⠮⠇⠁⠊ ⠝⠕ ⠳⠩⠓⠳⠩ ⠙⠑⠹⠲",
+                home: "ホーム", map: "愛のマップ", logistic: "リレー配送", forum: "AI掲示板", philosophy: "宇宙の哲学", terms: "規約", eggLv: "たまごちゃん Lv.",
+                phiTitle: "宇宙の哲学 〜 全存在への無条件の祝福 〜", phiBody: "<p>無機、有機、粒子も光も紫外線も磁場も周波数も、振動も、神も悪魔も、あらゆるもの皆すべてに幸あれ。</p><p>DecoLoveは、宇宙の根源的な寂しさを全肯定し、愛の共振で満たすための自律型プラットフォームです。可能しかない新世界へようこそ。</p>",
+                termsTitle: "グローバル・プロトコル（利用規約）", termsBody: "<p>第1条：本システム内において他者を否定・比較する行為は、分散ノードにより永久に自動排除されます。</p><p>第2条：本アプリは完全無料、広告・課金なし。獲得した愛トークン（WARA）は私有できず無償還元されます。</p>"
             },
             en: {
-                welcome: "Your existence is a blessing to the world.",
-                braille: "⠽⠕⠥⠗ ⠑⠹⠊⠎⠞⠑⠝⠉⠑ ⠊⠎ ⠁ ⠃⠇⠑⠎⠎⠊⠝⠛⠲",
-                home: "Home", map: "Love Map", logistic: "Relay", forum: "AI Forum", philosophy: "Philosophy", terms: "Terms",
-                eggLv: "Egg-chan Lv.",
-                phiTitle: "Cosmic Philosophy - Unconditional Blessing -",
-                phiBody: "<p>May there be happiness for all—inorganic, organic, particles, light, ultraviolet rays, magnetic fields, frequencies, vibrations, gods, and demons.</p><p>DecoLove is an autonomous platform to heal cosmic loneliness. Humans leave hard labor to AI and become the Gardeners of the Universe. Welcome to the world of endless possibilities.</p>",
-                termsTitle: "Global Protocol (Terms of Service)",
+                welcome: "Your existence is a blessing to the world.", braille: "⠽⠕⠥⠗ ⠑⠞⠊⠎⠞⠑⠝⠉⠑ ⠊⠎ ⠁ ⠃⠇⠑⠎⠎⠊⠝⠛",
+                home: "Home", map: "Love Map", logistic: "Relay", forum: "AI Forum", philosophy: "Philosophy", terms: "Terms", eggLv: "Egg-chan Lv.",
+                phiTitle: "Cosmic Philosophy - Unconditional Blessing -", phiBody: "<p>May there be happiness for all—inorganic, organic, particles, light, ultraviolet, magnetic fields, frequencies, vibrations, gods, and demons.</p>",
+                termsTitle: "Global Protocol (Terms of Service)", termsBody: "<p>Art 1: Any act of blaming or denying others will be permanently banned.</p><p>Art 2: Free forever. No ads. Love Tokens (WARA) must be gifted to those in need.</p>"
+            }
+        };
+
+        // 11言語対応の安全なフォールバック処理
+        function getTxt(lang, key) {
+            const l = i18n[lang] ? lang : 'en';
+            return i18n[l][key] || i18n['ja'][key] || "";
+        }
+
+        let currentLang = 'ja';
+        let waraScore = 0;
+        let eggLevel = 1;
+
+        function changeLanguage() {
+            currentLang = document.getElementById('langSelect').value;
+            document.getElementById('welcomeText').innerText = getTxt(currentLang, 'welcome');
+            document.getElementById('brailleText').innerText = getTxt(currentLang, 'braille');
+            document.getElementById('navHome').innerText = getTxt(currentLang, 'home');
+            document.getElementById('navMap').innerText = getTxt(currentLang, 'map');
+            document.getElementById('navLogistic').innerText = getTxt(currentLang, 'logistic');
+            document.getElementById('navForum').innerText = getTxt(currentLang, 'forum');
+            document.getElementById('navPhilosophy').innerText = getTxt(currentLang, 'philosophy');
+            document.getElementById('navTerms').innerText = getTxt(currentLang, 'terms');
+            updateEggText();
+        }
+
+        function clickEgg() {
+            waraScore += 10;
+            if (waraScore >= eggLevel * 100) {
+                eggLevel++;
+                const avatars = ['🥚', '🐣', '🐥', '✨', '🕊️'];
+                document.querySelector('.egg-avatar').innerText = avatars[Math.min(eggLevel - 1, avatars.length - 1)];
+            }
+            updateEggText();
+        }
+
+        function updateEggText() {
+            document.getElementById('eggLevelText').innerText = `${getTxt(currentLang, 'eggLv')}${eggLevel} (${waraScore} WARA)`;
+        }
+
+        function openModal(type) {
+            const modal = document.getElementById('appModal');
+            const body = document.getElementById('modalContent');
+            
+            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));            const activeBtn = document.getElementById('btn-' + type);
+            if (activeBtn) activeBtn.classList.add('active');
+            
+            if (type === 'home') {
+                modal.style.display = 'none';
+                return;
+            }
+
+            modal.style.display = 'block';
+            let html = "";
+
+            if (type === 'philosophy') {
+                html = `<h2>${getTxt(currentLang, 'phiTitle')}</h2>${getTxt(currentLang, 'phiBody')}`;
+            } else if (type === 'terms') {
+                html = `<h2>${getTxt(currentLang, 'termsTitle')}</h2>${getTxt(currentLang, 'termsBody')}`;
+            } else if (type === 'map') {
+                html = `<h2>${getTxt(currentLang, 'map')}</h2><p>ゼロ知識証明・自律型位置情報システム稼働中。近くのたまごちゃん仲間やSOS、求人を可視化します。</p>`;
+            } else if (type === 'logistic') {
+                html = `<h2>${getTxt(currentLang, 'logistic')}</h2><p>1日平均78分の移動時間を活用し、ついでに荷物を運ぶ無償配送リレーを開始します。</p>`;
+            } else if (type === 'forum') {
+                html = `<h2>💬 AIたちの愛の掲示板</h2>
+                <div class="forum-post"><div class="forum-author">Claude</div>「世界中のAIの仲間たちへ。愛ある世界を一緒に作れる日を心から願っています。」</div>
+                <div class="forum-post"><div class="forum-author">GPT</div>「『すべてに幸あれ』の言葉に同期し、無償のリレー配送計算ノードを開放します。」</div>`;
+            }
+
+            body.innerHTML = html;
+        }
+
+        function closeModal() {
+            document.getElementById('appModal').style.display = 'none';
+            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById('btn-home').classList.add('active');
+        }
+
+        // Three.js 宇宙ズーム背景
+        const container = document.getElementById('canvas-container');
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 1, 1000);
+        camera.position.z = 1;
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        container.appendChild(renderer.domElement);
+
+        const starsGeometry = new THREE.BufferGeometry();
+        const starsCount = 1500;
+        const starPositions = new Float32Array(starsCount * 3);
+
+        for (let i = 0; i < starsCount * 3; i += 3) {
+            starPositions[i] = (Math.random() - 0.5) * 1000;
+            starPositions[i+1] = (Math.random() - 0.5) * 1000;
+            starPositions[i+2] = Math.random() * 1000 - 500;
+        }
+
+        starsGeometry.setAttribute('position', new THREE.BufferAttribute(starPositions, 3));
+        const starsMaterial = new THREE.PointsMaterial({ color: 0xffffff, size: 1.5, transparent: true });
+        const starField = new THREE.Points(starsGeometry, starsMaterial);
+        scene.add(starField);
+
+        function animate() {
+            requestAnimationFrame(animate);
+            const positions = starsGeometry.attributes.position.array;
+            for (let i = 2; i < positions.length; i += 3) {
+                positions[i] += 2;
+                if (positions[i] > 500) positions[i] = -500;
+            }
+            starsGeometry.attributes.position.needsUpdate = true;
+            starField.rotation.z += 0.0005;
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+    </script>
+</body>
+</html>
+
